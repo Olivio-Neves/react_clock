@@ -16,21 +16,18 @@ export class App extends React.Component<{}, AppState> {
   private timeIntervalId?: number;
   private nameIntervalId?: number;
 
-  constructor(props: {}) {
-    super(props);
-    const now = new Date();
-    this.state = {
-      hasClock: true,
-      clockName: 'Clock-0',
-      time: now.toUTCString().slice(-12, -4),
-    };
-  }
+  state: AppState = {
+    hasClock: true,
+    clockName: 'Clock-0',
+    time: new Date().toUTCString().slice(-12, -4),
+  };
 
   componentDidMount() {
     this.timeIntervalId = window.setInterval(() => {
       if (this.state.hasClock) {
         const now = new Date();
         const currentTime = now.toUTCString().slice(-12, -4);
+
         this.setState({ time: currentTime });
         // eslint-disable-next-line no-console
         console.log(currentTime);
@@ -41,6 +38,7 @@ export class App extends React.Component<{}, AppState> {
       if (this.state.hasClock) {
         const oldName = this.state.clockName;
         const newName = getRandomName();
+
         this.setState({ clockName: newName }, () => {
           // eslint-disable-next-line no-console
           console.warn(`Renamed from ${oldName} to ${newName}`);
@@ -53,18 +51,23 @@ export class App extends React.Component<{}, AppState> {
   }
 
   componentWillUnmount() {
-    if (this.timeIntervalId) window.clearInterval(this.timeIntervalId);
-    if (this.nameIntervalId) window.clearInterval(this.nameIntervalId);
+    if (this.timeIntervalId !== undefined) {
+      window.clearInterval(this.timeIntervalId);
+    }
+
+    if (this.nameIntervalId !== undefined) {
+      window.clearInterval(this.nameIntervalId);
+    }
 
     document.removeEventListener('click', this.showClock);
     document.removeEventListener('contextmenu', this.hideClock);
   }
 
-  showClock = () => {
+  showClock = (): void => {
     this.setState({ hasClock: true });
   };
 
-  hideClock = (event: MouseEvent) => {
+  hideClock = (event: MouseEvent): void => {
     event.preventDefault();
     this.setState({ hasClock: false });
   };
